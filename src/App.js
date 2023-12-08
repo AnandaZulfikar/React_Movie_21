@@ -13,33 +13,35 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          'https://api.themoviedb.org/3/movie/popular',
+          'https://api.themoviedb.org/3/discover/movie',
           {
             params: {
-              api_key: '9a07af15570e929494f864d903001ca1',
+              api_key: 'b09af6d4e71235daa44e4c0d2ec0f321',
+              page: currentPage,
             },
           }
         );
-        setMovies(response.data.results);
+        setMovies((prevMovies) => [...prevMovies, ...response.data.results]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   const handleSearch = () => {
     const results = movies.filter((movie) =>
       movie.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setSearchResults(results);
-    setSelectedGenre(''); // Reset genre saat melakukan pencarian
+    setSelectedGenre('');
   };
 
   const resetSearch = () => {
@@ -69,7 +71,7 @@ const App = () => {
         <button onClick={handleSearch}>Cari</button>
         <button onClick={resetSearch}>Reset</button>
 
-        <br/>
+        <br />
         <select
           value={selectedGenre}
           onChange={(e) => {
@@ -84,6 +86,13 @@ const App = () => {
           <option value="27">Horror</option>
           <option value="10749">Romance</option>
         </select>
+        <br />
+        <h6>
+          Nama: Muhammad Ananda Zulfikar Alfarizi
+        </h6>
+        <h6>
+          Kelas: XI RPL 1
+        </h6>
 
         <Routes>
           <Route
@@ -92,6 +101,11 @@ const App = () => {
           />
           <Route path="/movie/:id" element={<MovieDetail />} />
         </Routes>
+
+        {/* Tombol untuk memuat lebih banyak film */}
+        <button onClick={() => setCurrentPage((prevPage) => prevPage + 1)}>
+          Muat Lebih Banyak
+        </button>
       </div>
     </Router>
   );
